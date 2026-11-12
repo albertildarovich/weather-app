@@ -3,3 +3,6 @@ uvicorn[standard]
 httpx
 prometheus-client
 pydantic-settings
+pytest
+pytest-asyncio
+pytest-cov

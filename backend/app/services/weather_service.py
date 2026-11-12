@@ -27,16 +27,11 @@ async def get_weather_by_city(
             "language": "en",
             "format": "json",
         }
-        
+
         geocoding_response = await client.get(
             settings.GEOCODING_API_URL,
             params=params,
         )
-
-        logger.info("Geocoding URL: %s", geocoding_response.url)
-        logger.info("Geocoding status: %s", geocoding_response.status_code)
-        logger.info("Geocoding content type: %s", geocoding_response.headers.get("content-type"))
-        logger.info("Geocoding response body: %s", geocoding_response.text[:500])
 
         geocoding_response.raise_for_status()
 
@@ -79,6 +74,7 @@ async def get_weather_by_city(
         httpx.HTTPError,
         KeyError,
         TypeError,
+        ValueError
     ) as error:
         logger.exception(
             "Failed to fetch weather for city=%s",

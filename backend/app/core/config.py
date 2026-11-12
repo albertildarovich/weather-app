@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import model_validator
 from typing import Literal
 
 
@@ -21,6 +22,15 @@ class Settings(BaseSettings):
     WEATHER_API_URL: str = (
         "https://api.open-meteo.com/v1/forecast"
     )
+
+    @model_validator(mode="after")
+    def validate_debug_mode(self) -> "Settings":
+        if self.APP_ENV == "production" and self.DEBUG:
+            raise ValueError(
+                "DEBUG must be false in production"
+            )
+
+        return self
 
 
 settings = Settings()
