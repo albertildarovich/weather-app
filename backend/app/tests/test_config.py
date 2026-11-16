@@ -4,6 +4,15 @@ from pydantic import ValidationError
 from app.core.config import Settings
 
 
+DATABASE_DEFAULTS = {
+    "DATABASE_URL": "postgresql+asyncpg://test:test@localhost:5432/weather",
+    "POSTGRES_USER": "test",
+    "POSTGRES_PASSWORD": "test",
+    "POSTGRES_DB": "test",
+    "POSTGRES_PORT": "5432",
+}
+
+
 @pytest.fixture(autouse=True)
 def isolated_settings_env(monkeypatch):
     for field_name in Settings.model_fields:
@@ -11,6 +20,10 @@ def isolated_settings_env(monkeypatch):
         monkeypatch.delenv(field_name.lower(), raising=False)
 
     monkeypatch.setitem(Settings.model_config, "env_file", None)
+
+    # Required database settings stay out of the way of the assertions below.
+    for name, value in DATABASE_DEFAULTS.items():
+        monkeypatch.setenv(name, value)
 
 
 def test_production_debug_true_raises_error():
